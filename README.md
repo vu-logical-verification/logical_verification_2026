@@ -30,7 +30,7 @@ navigate to the location where you would like to have the course files, and
 run the following command to clone this repository:
 
 ```bash
-git clone https://github.com/vu-logical-verification/logical_verification_2025
+git clone https://github.com/vu-logical-verification/logical_verification_2026
 ```
 
 ![Cloning this Git repo](.imgs/clone.png)
