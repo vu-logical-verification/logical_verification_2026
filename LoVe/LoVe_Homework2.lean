@@ -3,10 +3,13 @@ Johannes Hölzl, and Jannis Limperg. See `LICENSE.txt`. -/
 
 import LoVe.LoVelib
 
+-- You may find it helpful to review the demo files when solving the questions.
+-- You are expected to understand the parts of the demos relevant to the homework.
 
-/- **# LoVe Homework 6: Functional Programming and Inductive Predicates**
+/- # LoVe Homework 2: Functional Programming and Recursors
 
-Replace the placeholders (e.g., `:= sorry`) with your solutions. -/
+Replace the placeholders (e.g., `:= sorry`) with your solutions.
+-/
 
 set_option autoImplicit false
 set_option tactic.hygienic false
@@ -14,9 +17,11 @@ set_option tactic.hygienic false
 namespace LoVe
 
 
-/- **## Question 1: Map**
+/- ## Question 1: Map
 
-Recall that `map f xs` applies the function `f` to every element of the list `xs`. -/
+Recall that `map f xs` applies the function `f` to every element of the
+list `xs`.
+-/
 
 /- 1.1. Define `map` recursively on lists. -/
 
@@ -24,9 +29,9 @@ def map {α β : Type} (f : α → β) : List α → List β
   | []      => []
   | x :: xs => sorry
 
-
-/- 1.2. Prove that mapping the composition of two functions is equivalent to
-mapping the first function and then the second function. -/
+/- 1.2. Prove that mapping the composition of two functions is equivalent
+to mapping the first function and then the second function.
+-/
 
 theorem map_comp {α β γ : Type} (f : α → β) (g : β → γ) :
     ∀xs : List α,
@@ -34,134 +39,143 @@ theorem map_comp {α β γ : Type} (f : α → β) (g : β → γ) :
   sorry
 
 
-/- **## Question 2: Gauss's Summation Formula**
+/- ## Question 2: Gauss's Summation Formula
 
-`sumUpToOfFun f n = f 0 + f 1 + ⋯ + f n`: -/
+The function `sumUpToOfFun f n` computes the sum
+
+  f 0 + f 1 + ⋯ + f n.
+-/
 
 def sumUpToOfFun (f : ℕ → ℕ) : ℕ → ℕ
   | 0     => f 0
   | m + 1 => sumUpToOfFun f m + f (m + 1)
 
-
-/- 2.1. Prove the following theorem, discovered by Carl Friedrich
-Gauss as a pupil.
+/- 2.1. Prove Gauss's summation formula.
 
 Hints:
-
-* The `mul_add` and `add_mul` theorems might be useful to reason about
-  multiplication.
-
-* The `linarith` tactic might be useful to reason about
-  addition. -/
+* The `mul_add` and `add_mul` theorems might be useful when reasoning
+  about multiplication.
+* The `linarith` tactic might be useful when reasoning about addition.
+-/
 
 #check mul_add
 #check add_mul
 
 theorem sumUpToOfFun_eq :
-    ∀m : ℕ, 2 * sumUpToOfFun (fun i ↦ i) m = m * (m + 1) := sorry
+    ∀m : ℕ, 2 * sumUpToOfFun (fun i ↦ i) m = m * (m + 1) :=
+  sorry
+
+/- 2.2. Prove that summation distributes over pointwise addition. -/
+
+theorem sumUpToOfFun_add (f g : ℕ → ℕ) :
+    ∀n : ℕ,
+      sumUpToOfFun (fun i ↦ f i + g i) n =
+        sumUpToOfFun f n + sumUpToOfFun g n :=
+  sorry
 
 
-/- 2.2. Prove the following property of `sumUpToOfFun`. -/
+/- ## Question 3: Recursion on Natural Numbers
 
-theorem sumUpToOfFun_mul (f g : ℕ → ℕ) :
-    ∀n : ℕ, sumUpToOfFun (fun i ↦ f i + g i) n =
-      sumUpToOfFun f n + sumUpToOfFun g n := sorry
+Lean automatically generates a recursor for every inductive type.
 
+In this question, we will define our own recursor for natural numbers
+and use recursors to implement several functions.
+-/
 
-/- **## Question 3: Even and Odd**
+/- 3.1. Complete the definition of `recNat`, corresponding to the
+natural number recursor from the lectures. Do not use the built-in recursor `Nat.rec`.
 
-Consider the following inductive definition of even numbers: -/
+The function takes:
+* A result type `τ`.
+* A natural number `e`.
+* A base-case value `ez`.
+* A step function `ebody`.
+-/
 
-inductive Even : ℕ → Prop
-  | zero              : Even 0
-  | add_two (k : ℕ)   : Even k → Even (k + 2)
+def recNat (τ : Type) (e : ℕ) (ez : τ)
+    (ebody : ℕ → τ → τ) : τ :=
+  sorry
 
+/- 3.2. Use your `recNat` function to define `double`, which doubles
+a natural number.
 
-/- 3.1. Define a similar predicate for odd numbers, by completing the
-Lean definition below. The definition should distinguish two cases, like `Even`,
-and should not rely on `Even`. -/
+You may not use arithmetic operators such as `+` or `*`.
+You may use the constructors of `Nat`, such as `Nat.succ`.
+-/
 
-inductive Odd : ℕ → Prop
--- supply the missing cases here
+def double (x : ℕ) : ℕ :=
+  sorry
 
+-- Test your implementation:
+-- #eval double 0
+-- #eval double 10
+-- #eval double 20
+-- #eval double 30
 
-/- 3.2. Give proof terms for the following propositions, based on
-your answer to question 3.1. -/
+/- 3.3. Use your `recNat` function to define
+`dec`, which subtracts one from a natural number.
 
-theorem Odd_3 :
-    Odd 3 :=
-sorry
+The function should satisfy:
+* dec 0 = 0
+* dec 9 = 8
+* dec 10 = 9
 
-theorem Odd_5 :
-    Odd 5 :=
-sorry
+You may not use arithmetic operators such as `+` or `*`.
+You may use the constructors of `Nat`, such as `Nat.succ`.
+-/
 
+def dec (x : ℕ) : ℕ :=
+  sorry
 
-/- 3.3. Prove the following theorems by rule induction: -/
+-- Test your implementation:
+-- #eval dec 0
+-- #eval dec 10
+-- #eval dec 20
+-- #eval dec 30
 
-theorem Even_Odd {n : ℕ} (heven : Even n) :
-    Odd (n + 1) :=
-sorry
+/- 3.4. Use your `recNat` (and `dec` if you want to) to define subtraction
+on natural numbers.
 
-theorem Even_Not_Odd {n : ℕ} (heven : Even n) :
-    ¬ Odd n :=
-sorry
+The function `sub a b` should subtract `b` from `a`. Since we are
+working with natural numbers, subtraction should return zero whenever
+`b` is greater than `a`.
 
+For example:
+* sub 10 3 = 7
+* sub 5 5 = 0
+* sub 3 10 = 0
 
-/- **## Question 4: Reflexive Transitive Closure^2** -/
+You may not use arithmetic operators such as `+`, `-`, or `*`.
+-/
 
-/- Consider the following inductive definition of the
-   reflexive transitive closure of a relation `R`,
-   modeled as a binary predicate `Star' R`. -/
+def sub (a b : ℕ) : ℕ :=
+  sorry
 
-inductive Star' {α : Type} (R : α → α → Prop) : α → α → Prop
-  | refl (a : α)      : Star' R a a
-  | chain (a b c : α) : Star' R a b → R b c → Star' R a c
-
-
-/- We proved the following two properties in the lecture: -/
-
-lemma Star.closure {α : Type} (R : α → α → Prop) (a b : α) :
-    R a b → Star' R a b :=
-  by
-    intro hab
-    apply Star'.chain a a b
-    { exact Star'.refl a }
-    { exact hab }
-
-
-theorem startransitive {α : Type} (R : α → α → Prop) (a b c : α) :
-    Star' R a b → Star' R b c → Star' R a c :=
-  by
-    intro sab sbc
-    induction sbc with
-    | refl =>
-        apply sab
-    | chain a' b' hsrba hra'b' ih =>
-        apply Star'.chain
-        { exact ih }
-        { exact hra'b' }
-
-
-/- Prove that `Star' (Star' R)` is the same relation as `Star' R`.
-
-You may use the above two lemmas. -/
-
-lemma Star.Star_Iff_Star {α : Type} (R : α → α → Prop) (a b : α) :
-    Star' (Star' R) a b ↔ Star' R a b :=
-sorry
+-- Test your implementation:
+-- #eval sub 10 3
+-- #eval sub 5 5
+-- #eval sub 3 10
+-- #eval sub 20 0
 
 
-/- **## Question 5: Sets** -/
 
-/- One approach to implementing sets that are extensional
-   (that is, two sets are equal iff they have the same elements)
-   in proof assistants is to maintain a strict order on the elements. -/
+/- ## Question 4: Sets
 
+One approach to implementing extensional sets in proof assistants is
+to maintain a strict order on their elements.
 
--- We will use a comparison type together with two functions
--- compare and compare_nat. We need them, instead of just using <, since
--- we use the Option ℕ type in our set definition.
+A set is extensional if two sets are equal exactly when they contain
+the same elements.
+
+We will represent finite sets of natural numbers using a comparison
+function and an inductive type.
+-/
+
+/- ### Comparisons
+
+We use the following comparison type and functions instead of the
+ordinary `<` operator, since our set representation uses `Option ℕ`.
+-/
 
 inductive Comparison : Type
   | lt : Comparison
@@ -170,33 +184,31 @@ inductive Comparison : Type
 
 open Comparison
 
-
-/- We will be working with sets of natural numbers. -/
-
 def compare_nat : ℕ → ℕ → Comparison
-  | Nat.zero, Nat.zero       => eq
-  | Nat.zero, Nat.succ _     => lt
-  | Nat.succ _, Nat.zero     => gt
-  | Nat.succ a, Nat.succ b   => compare_nat a b
+  | Nat.zero,   Nat.zero   => eq
+  | Nat.zero,   Nat.succ _ => lt
+  | Nat.succ _, Nat.zero   => gt
+  | Nat.succ a, Nat.succ b => compare_nat a b
 
+/- An `Option α` is either `none` or `some a` for a value `a : α`.
 
-/- An `Option α` type has either the form `some a` for a value of type α or
-it has the form `none`. -/
+For reference:
 
--- inductive Option.{u} : Type u → Type u
---   | Option.none : {α : Type u} → Option α
---   | Option.some : {α : Type u} → α → Option α
+inductive Option (α : Type) : Type
+  | none : Option α
+  | some : α → Option α
+-/
 
 def compare : Option ℕ → Option ℕ → Comparison
-  | none, none       => eq
-  | none, some _     => gt
-  | some _, none     => lt
-  | some a, some b   => compare_nat a b
+  | none,   none   => eq
+  | none,   some _ => gt
+  | some _, none   => lt
+  | some a, some b => compare_nat a b
 
+/- The following lemma may be useful in your proofs. -/
 
-/- This lemma might make things easier. -/
-
-lemma compare_nat_compares (a b : ℕ) : compare_nat a b = lt ↔ a < b := by
+lemma compare_nat_compares (a b : ℕ) :
+    compare_nat a b = lt ↔ a < b := by
   induction a generalizing b with
   | zero =>
       cases b with
@@ -213,22 +225,27 @@ lemma compare_nat_compares (a b : ℕ) : compare_nat a b = lt ↔ a < b := by
           rw [ih b']
 
 
-/- A term of type `SetAbove (some a)` is a set whose smallest element is `a`;
-a term of type `SetAbove none` is the empty set.
+/- ### Set Representation
+
+A term of type `SetAbove (some a)` represents a nonempty set whose
+smallest element is `a`.
+
+A term of type `SetAbove none` represents the empty set.
 
 For example:
-∅ : SetAbove none
-{1,2,3} : SetAbove (some 1) -/
 
+  ∅       : SetAbove none
+  {1,2,3} : SetAbove (some 1)
 
-/-
-The definition of SetAbove is similar to the definition of a list.
+The definition of `SetAbove` resembles the definition of a list.
 
-Similar to the list constructor List.cons, scons also takes a next element
-e : ℕ and a set s : SetAbove a as arguments.
+Like `List.cons`, the constructor `scons` takes a new element `a` and
+an existing set.
 
-Unlike the list constructor, scons also takes as argument a proof that e is
-less than a, since we ensure uniqueness by order.
+Unlike `List.cons`, it also requires a proof that `a` is strictly
+smaller than the smallest element of the existing set.
+
+This ordering ensures that elements cannot occur more than once.
 -/
 
 inductive SetAbove : Option ℕ → Type
@@ -239,32 +256,42 @@ inductive SetAbove : Option ℕ → Type
       SetAbove (some a)
 
 
-/- 5.1. Complete the definition `empty` that returns the empty set. -/
+/- 4.1. Complete the definition of `empty`, which represents the
+empty set.
+-/
 
-def empty : SetAbove none := sorry
+def empty : SetAbove none :=
+  sorry
 
+/- 4.2. Complete the definition of `singleton`.
 
-/- 5.2. Complete the definition of a singleton set.
+For every natural number `a`, `singleton a` should represent the set
+containing only `a`.
+-/
 
-For each number `a`, `singleton a` should return the set `{a}`, i.e. `a → ∅`. -/
+def singleton (a : ℕ) : SetAbove (some a) :=
+  sorry
 
-def singleton (a : ℕ) : SetAbove (some a) := sorry
+/- 4.3. Complete the definition of `mem`.
 
+The function should return `true` exactly when `a` is a member of
+the given set.
+-/
 
-/- 5.3. Complete the definition of a membership predicate that checks whether a
-number `a` is a member of a set. -/
+def mem (a : ℕ) {k : Option ℕ} : SetAbove k → Bool :=
+  sorry
 
-def mem (a : ℕ) {k : Option ℕ} : SetAbove k → Bool := sorry
+/- 4.4. Prove that an element strictly smaller than the smallest
+element of a set cannot belong to that set.
 
-
-/- 5.4. Show that an element smaller than the smallest element of the set
-can (unsurprisingly) never belong to the set. -/
+Hint: The lemma `compare_nat_compares` may be useful.
+-/
 
 #check compare_nat_compares
 
-lemma mem_lt_key_false (a : Nat) (k : Option Nat) (m : SetAbove k) :
+lemma mem_lt_key_false (a : ℕ) (k : Option ℕ) (m : SetAbove k) :
     compare (some a) k = lt →
-    mem a m = false := sorry
-
+    mem a m = false :=
+  sorry
 
 end LoVe
